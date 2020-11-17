@@ -1,9 +1,16 @@
 package it.unibo.oop.lab.mvcio;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintStream;
+
 /**
  * 
  */
 public class Controller {
+    //
+    private File current = new File("output.txt");
+    private final String path = System.getProperty("user.home") + System.getProperty("file.separator") + this.current;
 
     /*
      * This class must implement a simple controller responsible of I/O access. It
@@ -12,15 +19,49 @@ public class Controller {
      * Implement this class with:
      * 
      * 1) A method for setting a File as current file
+     */
+    /**
      * 
-     * 2) A method for getting the current File
+     * @param f
+     */
+    public void setFile(final File f) {
+        this.current = f;
+    }
+     /* 2) A method for getting the current File
+     */
+    /**
      * 
-     * 3) A method for getting the path (in form of String) of the current File
+     * @return File
+     */
+    public File getCurrentFile() {
+        return this.current;
+    }
+     /* 3) A method for getting the path (in form of String) of the current File
+     */
+    /**
      * 
-     * 4) A method that gets a String as input and saves its content on the current
+     * @return pathFile
+     */
+    public String getPath() {
+        return this.path;
+    }
+     /* 4) A method that gets a String as input and saves its content on the current
      * file. This method may throw an IOException.
+     */
+    /**
      * 
-     * 5) By default, the current file is "output.txt" inside the user home folder.
+     * @param s
+     * @throws IOException
+     */
+    public void write(final String s) throws IOException {
+        try (PrintStream ps = new PrintStream(this.path)) {
+            ps.print(s);
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw e;
+        }
+    }
+     /* 5) By default, the current file is "output.txt" inside the user home folder.
      * A String representing the local user home folder can be accessed using
      * System.getProperty("user.home"). The separator symbol (/ on *nix, \ on
      * Windows) can be obtained as String through the method
