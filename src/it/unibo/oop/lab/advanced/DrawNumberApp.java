@@ -1,5 +1,9 @@
 package it.unibo.oop.lab.advanced;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
 /**
  */
 public final class DrawNumberApp implements DrawNumberViewObserver {
@@ -11,13 +15,35 @@ public final class DrawNumberApp implements DrawNumberViewObserver {
     private final DrawNumberView view;
 
     /**
-     * 
+     * @param file
      */
-    public DrawNumberApp() {
+    public DrawNumberApp(final String file) {
         this.model = new DrawNumberImpl(MIN, MAX, ATTEMPTS);
         this.view = new DrawNumberViewImpl();
         this.view.setObserver(this);
         this.view.start();
+        //
+        try {
+            var contents = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream(file)));
+            final Configuration.Builder configurationBuilder = new Configuration.Builder();
+            for (var configLine = contents.readLine(); configLine != null; configLine = contents.readLine()) {
+                final String[] lineElements = configLine.split(":");
+                if (lineElements.length == 2) {
+                    final int value = Integer.parseInt(lineElements[1].trim());
+                    if (lineElements[0].contains("maximum")) {
+                        configurationBuilder.setMax(value);
+                    } else if (lineElements[0].contains("minimum")) {
+                        configurationBuilder.setMin(value);
+                    } else if (lineElements[0].contains("attempts")) {
+                        configurationBuilder.setAttempts(value);
+                    }
+                } else {
+                    this.view.displayError("I cannot understand \"" + configLine + '"');
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -47,7 +73,7 @@ public final class DrawNumberApp implements DrawNumberViewObserver {
      *            ignored
      */
     public static void main(final String... args) {
-        new DrawNumberApp();
+        new DrawNumberApp("config.yml");
     }
 
 }
